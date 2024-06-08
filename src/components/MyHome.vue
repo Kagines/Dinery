@@ -1,7 +1,7 @@
 <template>
 <MyHeader />
 <h1>Hello {{ name }}, Welcome on Home Page</h1>
-<table border="1">
+<table border="2">
   <tr>
     <td>Id</td>
     <td>Name</td>
