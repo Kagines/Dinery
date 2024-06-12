@@ -1,25 +1,37 @@
 <template>
-<MyHeader />
-<h1>Hello {{ name }}, Welcome on Home Page</h1>
-<table border="2">
-  <tr>
-    <td>Id</td>
-    <td>Name</td>
-    <td>Contact</td>
-    <td>Address</td>
-    <td>Actions</td>
-  </tr>
-  <tr v-for="item in restaurant" :key="item.id">
-    <td>{{ item.id }}</td>
-    <td>{{ item.name }}</td>
-    <td>{{ item.contact }}</td>
-    <td>{{ item.address }}</td>
-    <td>
-      <router-link :to="'/update/' + item.id">Update</router-link>
-      <button v-on:click="deleteRestaurant(item.id)">Delete</button>
-    </td>
-  </tr>
-</table>
+  <MyHeader />
+  <div class="home-container">
+    <h1>Hello {{ name }}, Welcome on Home Page</h1>
+    <table border="2">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Contact</th>
+          <th>Address</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in restaurant" :key="item.id">
+          <td>{{ item.id }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.contact }}</td>
+          <td>{{ item.address }}</td>
+          <td>
+            <div class="action-buttons">
+              <router-link :to="'/update/' + item.id" class="update-link">
+                <img src="../assets/update.png" alt="Update Icon" class="icon" style="height: 1em;"> Update
+              </router-link>
+              <button v-on:click="deleteRestaurant(item.id)" class="delete-button">
+                <img src="../assets/delete.png" alt="Delete Icon" class="icon" style="height: 1em;"> Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -60,8 +72,9 @@ export default {
     },
     async loadData() {
       let user = localStorage.getItem('user-info');
-      this.name = JSON.parse(user).name;
-      if (!user) {
+      if (user) {
+        this.name = JSON.parse(user).name;
+      } else {
         this.$router.push({ name: 'MySignUp' });
       }
       let result = await axios.get('http://localhost:3000/restaurant');
@@ -77,8 +90,81 @@ export default {
 </script>
 
 <style>
-td {
-  width: 160px;
-  height: 40px;
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-image: url('../assets/background4.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.home-container {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  margin: 150px 20px; /* Added top margin to push the container down */
+  border-radius: 10px;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+th, td {
+  padding: 30px 80px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.update-link,
+.delete-button {
+  padding: 10px 15px;
+  margin-right: 10px;
+  text-decoration: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.update-link {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.update-link:hover,
+.delete-button:hover {
+  opacity: 0.8;
+}
+
+.icon {
+  margin-right: 5px;
 }
 </style>
