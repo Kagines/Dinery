@@ -1,18 +1,20 @@
 <template>
-<MyHeader />
-<h1>Hello User, Welcome to Update Restaurant Page</h1>
-<form class="update">
-  <div class="input-group">
-    <input type="text" v-model="restaurant.name" class="input" placeholder="Enter Name" required>
+  <div class="container">
+    <MyHeader />
+    <h1 class="heading">Hello User, Welcome to Update Restaurant Page</h1>
+    <form class="update">
+      <div class="input-group">
+        <input type="text" id="name" v-model="restaurant.name" class="input" placeholder="Enter Name" required>
+      </div>
+      <div class="input-group">
+        <input type="text" id="address" v-model="restaurant.address" class="input" placeholder="Enter Address" required>
+      </div>
+      <div class="input-group">
+        <input type="text" id="contact" v-model="restaurant.contact" class="input" placeholder="Enter Contact" required>
+      </div>
+      <button type="submit" class="btn" v-on:click.prevent="updateRestaurant">Update Restaurant</button>
+    </form>
   </div>
-  <div class="input-group">
-    <input type="text" v-model="restaurant.address" class="input" placeholder="Enter Address" required>
-  </div>
-  <div class="input-group">
-    <input type="text" v-model="restaurant.contact" class="input" placeholder="Enter Contact" required>
-  </div>
-  <button type="submit" v-on:click.prevent="updateRestaurant">Update Restaurant</button>
-</form>
 </template>
 
 <script>
@@ -41,41 +43,94 @@ export default {
       this.$router.push({ name: 'MySignUp' })
     }
 
-    const id = this.$route.params.id; // Access restaurant ID from URL
+    const id = this.$route.params.id;
     if (!id) {
       console.error('Missing restaurant ID in URL!');
-      // Handle the case where there's no ID (optional: redirect or display error)
       return;
     }
 
     try {
       const result = await axios.get(`http://localhost:3000/restaurant/${id}`);
-      this.restaurant = result.data; // Assign fetched restaurant data
+      this.restaurant = result.data;
       console.log('Fetched restaurant data:', result);
     } catch (error) {
       console.error('Error fetching restaurant:', error);
-      // Handle errors gracefully (e.g., display error message)
     }
   },
 
   methods: {
     async updateRestaurant() {
-      // Update restaurant logic using this.restaurant data
       const id = this.$route.params.id;
       try {
         const response = await axios.put(`http://localhost:3000/restaurant/${id}`, this.restaurant);
         if (response.status === 200) {
           console.log('Restaurant updated successfully!');
-          // Handle successful update (e.g., redirect to another page, display success message)
+          this.$router.push({ name: 'MyHome' })
         } else {
           console.error('Error updating restaurant:', response.status, response.data);
-          // Handle update failure (e.g., display error message)
         }
       } catch (error) {
         console.error('Error updating restaurant:', error);
-        // Handle network or other errors
       }
     }
   }
 };
 </script>
+
+<style scoped>
+.container {
+  max-width: 600px;
+  margin: 150px auto;
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+  border-radius: 10px; /* Curved edges */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Drop shadow */
+  text-align: center; /* Center align text */
+}
+
+.heading {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.update {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center align form elements */
+}
+
+.input-group {
+  margin-bottom: 20px;
+  width: 100%; /* Ensure input groups take full width */
+  display: flex;
+  justify-content: center; /* Center align input groups */
+}
+
+.input {
+  width: 80%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.btn {
+  width: 50%;
+  padding: 10px;
+  font-size: 18px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+</style>

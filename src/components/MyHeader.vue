@@ -1,43 +1,67 @@
 <template>
-<div class="nav">
-    <router-link to="/">Home</router-link>
-    <router-link to="/add">Add Restaurant</router-link>
-    <a v-on:click="logout" href="#">Logout</a>
-</div>
-</template>
-
-<script>
-
-
-export default{
-    name:'MyHeader',
-    methods:{
-        logout(event){
-            event.preventDefault();
-           localStorage.clear();
-           this.$router.push({name:'MyLogin'})
-        }
+    <div class="nav">
+      <img src="../assets/dinery1.png" alt="Logo" class="logo1">
+      <router-link to="/">Home</router-link>
+      <router-link to="/add">Add Restaurant</router-link>
+      <a v-on:click="logout" href="#">Logout</a>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    name: 'MyHeader',
+    methods: {
+      logout(event) {
+        event.preventDefault();
+        localStorage.clear();
+        this.$router.push({ name: 'MyLogin' });
+      }
     }
-}
-</script>
-<style>
-.nav{
-    background-color: #333;
+  }
+  </script>
+  
+  <style>
+  .nav {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
     overflow: hidden;
-
-}
-.nav a{
-    float: left;
-    color:#f2f2f2f2;
-    padding: 14px 16px;
-    text-align: center;
-    font-size: 17px;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: auto;
+  }
+  
+  .nav a {
+    color: #fff;
+    font-size: 20px;
     text-decoration: none;
-    margin-right: 5px;
-}
-
-.nav a:hover{
-    background:#ddd;
-    color:#333;
-}
-</style>
+    padding: 10px;
+    transition: color 0.3s;
+  }
+  
+  .nav a:not(:last-child) {
+    margin-right: 20px; /* Equal space between links */
+  }
+  
+  .nav a:hover {
+    color: red;
+  }
+  
+  .logo1 {
+    width: 80px; /* Increased logo size */
+    height: auto;
+    margin-right: 20px; /* Space between logo and "Home" link */
+    display: block;
+    margin: 0 auto;
+  }
+  </style>
+  
