@@ -9,6 +9,7 @@
           <th>Name</th>
           <th>Contact</th>
           <th>Address</th>
+          <th>URL</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -18,6 +19,7 @@
           <td>{{ item.name }}</td>
           <td>{{ item.contact }}</td>
           <td>{{ item.address }}</td>
+          <td><a :href="item.url" target="_blank">{{ item.url }}</a></td>
           <td>
             <div class="action-buttons">
               <router-link :to="'/update/' + item.id" class="update-link">

@@ -13,6 +13,9 @@
         <div class="input-group">
           <input type="text" v-model="restaurant.contact" class="input" placeholder="Enter Contact" required>
         </div>
+        <div class="input-group">
+          <input type="text" v-model="restaurant.url" class="input" placeholder="Enter URL" required>
+        </div>
         <button type="submit" class="btn" v-on:click="addRestaurant">Add new Restaurant</button>
       </form>
     </div>
@@ -33,7 +36,8 @@ export default {
       restaurant: {
         name: '',
         address: '',
-        contact: ''
+        contact: '',
+        url:''
       }
     }
   },
@@ -44,7 +48,8 @@ export default {
       const result = await axios.post('http://localhost:3000/restaurant', {
         name: this.restaurant.name,
         address: this.restaurant.address,
-        contact: this.restaurant.contact
+        contact: this.restaurant.contact,
+        url: this.restaurant.url
       });
       if (result.status === 201) {
         this.$router.push({ name: 'MyHome' })

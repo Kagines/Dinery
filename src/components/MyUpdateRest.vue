@@ -12,6 +12,9 @@
       <div class="input-group">
         <input type="text" id="contact" v-model="restaurant.contact" class="input" placeholder="Enter Contact" required>
       </div>
+      <div class="input-group">
+        <input type="text" id="url" v-model="restaurant.url" class="input" placeholder="Enter url" required>
+      </div>
       <button type="submit" class="btn" v-on:click.prevent="updateRestaurant">Update Restaurant</button>
     </form>
   </div>
@@ -32,7 +35,8 @@ export default {
       restaurant: {
         name: '',
         address: '',
-        contact: ''
+        contact: '',
+        url:''
       }
     }
   },

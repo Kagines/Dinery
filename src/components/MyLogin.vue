@@ -5,50 +5,67 @@
     <form class="login" @submit="login">
       <div class="input-group">
         <input type="email" v-model="email" class="input" placeholder="Enter Email" required>
-        <span class="error-message"></span>
       </div>
       <div class="input-group">
         <input type="password" v-model="password" class="input" placeholder="Enter Password" required>
-        <span class="error-message"></span>
       </div>
       <button class="button" type="submit">Login</button>
       <p>
         <router-link to="/sign-up">Sign Up</router-link>
       </p>
     </form>
+    
+    <div v-if="showErrorModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button" @click="closeErrorModal">&times;</span>
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
 
 export default {
   name: 'MyLogin',
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      showErrorModal: false,
+      errorMessage: ''
     }
   },
   methods: {
     async login(event) {
       event.preventDefault(); // Prevent default form submission
 
+      this.showErrorModal = false; // Reset error modal visibility
+      this.errorMessage = ''; // Reset error message
+
       try {
         const response = await axios.get(`http://localhost:3000/users?email=${this.email}&password=${this.password}`);
 
         // Handle successful login
         if (response.status === 200 && response.data.length > 0) {
-          localStorage.setItem("user-info", JSON.stringify(response.data[0]));
+          localStorage.setItem('user-info', JSON.stringify(response.data[0]));
           this.$router.push({ name: 'MyHome' });
         } else {
-          console.error('Login failed:', response.status, response.data);
           // Handle login failure logic (e.g., display error message)
+          if (response.data.length === 0) {
+            this.errorMessage = 'Email not found or incorrect password.';
+            this.showErrorModal = true;
+          }
         }
       } catch (error) {
         console.error('Login error:', error);
-        // Handle network or other errors (e.g., display generic error message)
+        this.errorMessage = 'An error occurred during login. Please try again.';
+        this.showErrorModal = true;
       }
+    },
+    closeErrorModal() {
+      this.showErrorModal = false;
     }
   },
   mounted() {
@@ -80,15 +97,14 @@ body {
   text-align: center;
   width: 100%;
   max-width: 450px;
-  height: auto;
-  outline: auto;
   margin-left: 700px;
+  outline: auto;
+
 }
 
 .logo {
   width: 300px;
-  margin-bottom: 100px;
-  margin-top: -30px;
+  margin-bottom: 30px;
 }
 
 h1 {
@@ -114,12 +130,6 @@ h1 {
 .input:focus {
   border-color: #009688;
   outline: none;
-}
-
-.error-message {
-  color: red;
-  font-size: 12px;
-  margin-top: 5px;
 }
 
 .button {
@@ -151,5 +161,45 @@ a {
 
 a:hover {
   color: #00796b;
+}
+
+/* Modal styles */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 </style>
