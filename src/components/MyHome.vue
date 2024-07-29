@@ -28,6 +28,9 @@
               <button v-on:click="deleteRestaurant(item.id)" class="delete-button">
                 <img src="../assets/delete.png" alt="Delete Icon" class="icon" style="height: 1em;"> Delete
               </button>
+              <router-link :to="'/review/' + item.id" class="review-link">
+                <img src="../assets/review.png" alt="Review Icon" class="icon" style="height: 1em;"> Review
+              </router-link>
             </div>
           </td>
         </tr>
@@ -140,7 +143,8 @@ tr:nth-child(even) {
 }
 
 .update-link,
-.delete-button {
+.delete-button,
+.review-link {
   padding: 10px 15px;
   margin-right: 10px;
   text-decoration: none;
@@ -161,8 +165,14 @@ tr:nth-child(even) {
   color: white;
 }
 
+.review-link {
+  background-color: #2196F3;
+  color: white;
+}
+
 .update-link:hover,
-.delete-button:hover {
+.delete-button:hover,
+.review-link:hover {
   opacity: 0.8;
 }
 
