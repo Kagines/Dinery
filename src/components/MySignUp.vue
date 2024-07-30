@@ -42,7 +42,7 @@ export default {
       this.errors = {};
 
       try {
-        let result = await axios.post("http://localhost:3000/users", {
+        let result = await axios.post("http://localhost:8080/users", {
           name: this.name,
           email: this.email,
           password: this.password

@@ -5,13 +5,14 @@
     <form class="login" @submit="login">
       <div class="input-group">
         <input type="email" v-model="email" class="input" placeholder="Enter Email" required>
-        <span class="error-message"></span>
+        <span class="error-message" v-if="emailError">{{ emailError }}</span>
       </div>
       <div class="input-group">
         <input type="password" v-model="password" class="input" placeholder="Enter Password" required>
-        <span class="error-message"></span>
+        <span class="error-message" v-if="passwordError">{{ passwordError }}</span>
       </div>
       <button class="button" type="submit">Login</button>
+      <p class="error-message" v-if="loginError">{{ loginError }}</p>
       <p>
         <router-link to="/sign-up">Sign Up</router-link>
       </p>
@@ -20,35 +21,61 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
 
 export default {
   name: 'MyLogin',
   data() {
     return {
       email: '',
-      password: ''
-    }
+      password: '',
+      emailError: '',
+      passwordError: '',
+      loginError: ''
+    };
   },
   methods: {
     async login(event) {
       event.preventDefault(); // Prevent default form submission
 
+      // Reset error messages
+      this.emailError = '';
+      this.passwordError = '';
+      this.loginError = '';
+
+      // Basic validation
+      if (!this.validateEmail(this.email)) {
+        this.emailError = 'Invalid email format';
+        return;
+      }
+      if (this.password.length < 6) {
+        this.passwordError = 'Password must be at least 6 characters';
+        return;
+      }
+
       try {
-        const response = await axios.get(`http://localhost:3000/users?email=${this.email}&password=${this.password}`);
+        const response = await axios.get(`http://localhost:8080/users`, {
+          params: {
+            email: this.email,
+            password: this.password
+          }
+        });
 
         // Handle successful login
         if (response.status === 200 && response.data.length > 0) {
           localStorage.setItem("user-info", JSON.stringify(response.data[0]));
           this.$router.push({ name: 'MyHome' });
         } else {
-          console.error('Login failed:', response.status, response.data);
-          // Handle login failure logic (e.g., display error message)
+          this.loginError = 'Invalid email or password';
         }
       } catch (error) {
+        this.loginError = 'An error occurred during login. Please try again.';
         console.error('Login error:', error);
-        // Handle network or other errors (e.g., display generic error message)
       }
+    },
+    validateEmail(email) {
+      const re = /^(([^<>().\]\\.,;:\s@"]+(\.[^<>().\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/i;
+      return re.test(String(email).toLowerCase());
     }
   },
   mounted() {
@@ -57,7 +84,7 @@ export default {
       this.$router.push({ name: 'MyHome' });
     }
   }
-}
+};
 </script>
 
 <style scoped>

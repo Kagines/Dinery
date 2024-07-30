@@ -4,13 +4,13 @@
     <h1 class="heading">Hello User, Welcome to Update Restaurant Page</h1>
     <form class="update">
       <div class="input-group">
-        <input type="text" id="name" v-model="restaurant.name" class="input" placeholder="Enter Name" required>
+        <input type="text" id="name" v-model="restaurants.name" class="input" placeholder="Enter Name" required>
       </div>
       <div class="input-group">
-        <input type="text" id="address" v-model="restaurant.address" class="input" placeholder="Enter Address" required>
+        <input type="text" id="address" v-model="restaurants.address" class="input" placeholder="Enter Address" required>
       </div>
       <div class="input-group">
-        <input type="text" id="contact" v-model="restaurant.contact" class="input" placeholder="Enter Contact" required>
+        <input type="text" id="contact" v-model="restaurants.contact" class="input" placeholder="Enter Contact" required>
       </div>
       <button type="submit" class="btn" v-on:click.prevent="updateRestaurant">Update Restaurant</button>
     </form>
@@ -29,7 +29,7 @@ export default {
 
   data() {
     return {
-      restaurant: {
+      restaurants: {
         name: '',
         address: '',
         contact: ''
@@ -50,8 +50,8 @@ export default {
     }
 
     try {
-      const result = await axios.get(`http://localhost:3000/restaurant/${id}`);
-      this.restaurant = result.data;
+      const result = await axios.get(`http://localhost:8080/restaurants/${id}`);
+      this.restaurants = result.data;
       console.log('Fetched restaurant data:', result);
     } catch (error) {
       console.error('Error fetching restaurant:', error);
@@ -62,7 +62,7 @@ export default {
     async updateRestaurant() {
       const id = this.$route.params.id;
       try {
-        const response = await axios.put(`http://localhost:3000/restaurant/${id}`, this.restaurant);
+        const response = await axios.put(`http://localhost:8080/restaurants/${id}`, this.restaurants);
         if (response.status === 200) {
           console.log('Restaurant updated successfully!');
           this.$router.push({ name: 'MyHome' })

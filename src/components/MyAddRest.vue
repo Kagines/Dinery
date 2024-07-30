@@ -5,13 +5,13 @@
       <h1 class="heading">Hello User, Welcome to the Add Restaurant Page</h1>
       <form class="add-form">
         <div class="input-group">
-          <input type="text" v-model="restaurant.name" class="input" placeholder="Enter Name" required>
+          <input type="text" v-model="restaurants.name" class="input" placeholder="Enter Name" required>
         </div>
         <div class="input-group">
-          <input type="text" v-model="restaurant.address" class="input" placeholder="Enter Address" required>
+          <input type="text" v-model="restaurants.address" class="input" placeholder="Enter Address" required>
         </div>
         <div class="input-group">
-          <input type="text" v-model="restaurant.contact" class="input" placeholder="Enter Contact" required>
+          <input type="text" v-model="restaurants.contact" class="input" placeholder="Enter Contact" required>
         </div>
         <button type="submit" class="btn" v-on:click="addRestaurant">Add new Restaurant</button>
       </form>
@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-      restaurant: {
+      restaurants: {
         name: '',
         address: '',
         contact: ''
@@ -40,11 +40,11 @@ export default {
   methods: {
     async addRestaurant(event) {
       event.preventDefault()
-      console.warn(this.restaurant)
-      const result = await axios.post('http://localhost:3000/restaurant', {
-        name: this.restaurant.name,
-        address: this.restaurant.address,
-        contact: this.restaurant.contact
+      console.warn(this.restaurants)
+      const result = await axios.post('http://localhost:8080/restaurants', {
+        name: this.restaurants.name,
+        address: this.restaurants.address,
+        contact: this.restaurants.contact
       });
       if (result.status === 201) {
         this.$router.push({ name: 'MyHome' })

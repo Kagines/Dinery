@@ -13,7 +13,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in restaurant" :key="item.id">
+        <tr v-for="item in restaurants" :key="item.id">
           <td>{{ item.id }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.contact }}</td>
@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       name: '',
-      restaurant: [],
+      restaurants: [],
     };
   },
   components: {
@@ -52,15 +52,15 @@ export default {
   methods: {
     async deleteRestaurant(id) {
       try {
-        const response = await axios.delete(`http://localhost:3000/restaurant/${id}`);
+        const response = await axios.delete(`http://localhost:8080/restaurants/${id}`);
         if (response.status === 200) {
           console.log('Restaurant deleted successfully:', id);
 
           // Update the local restaurant data after successful deletion
-          const updatedRestaurants = this.restaurant.filter(
-            (restaurant) => restaurant.id !== id
+          const updatedRestaurants = this.restaurants.filter(
+            (restaurants) => restaurants.id !== id
           );
-          this.restaurant = updatedRestaurants;
+          this.restaurants = updatedRestaurants;
         } else {
           console.error('Error deleting restaurant:', response.status, response.data);
           // Handle errors (e.g., display error message to user)
@@ -77,9 +77,9 @@ export default {
       } else {
         this.$router.push({ name: 'MySignUp' });
       }
-      let result = await axios.get('http://localhost:3000/restaurant');
+      let result = await axios.get('http://localhost:8080/restaurants');
       console.log('Fetched restaurant data:', result.data);
-      this.restaurant = result.data;
+      this.restaurants = result.data;
     },
   },
 
