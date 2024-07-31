@@ -1,36 +1,48 @@
 <template>
-  <MyHeader />
-  <div class="home-container">
-    <h1>Hello {{ name }}, Welcome on Home Page</h1>
-    <table border="2">
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Name</th>
-          <th>Contact</th>
-          <th>Address</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in restaurants" :key="item.id">
-          <td>{{ item.id }}</td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.contact }}</td>
-          <td>{{ item.address }}</td>
-          <td>
-            <div class="action-buttons">
-              <router-link :to="'/update/' + item.id" class="update-link">
-                <img src="../assets/update.png" alt="Update Icon" class="icon" style="height: 1em;"> Update
-              </router-link>
-              <button v-on:click="deleteRestaurant(item.id)" class="delete-button">
-                <img src="../assets/delete.png" alt="Delete Icon" class="icon" style="height: 1em;"> Delete
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div>
+    <MyHeader />
+    <div class="home-container">
+      <h1>Hello {{ name }}, Welcome to the Home Page</h1>
+      <table border="2">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Address</th>
+            <th>Link</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in restaurants" :key="item.id">
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.contact }}</td>
+            <td>{{ item.address }}</td>
+            <td>
+              <a :href="item.link" target="_blank" rel="noopener noreferrer" v-if="item.link">
+                {{ item.link }}
+              </a>
+              <span v-else>No link available</span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <router-link v-if="isAdmin" :to="'/update/' + item.id" class="update-link">
+                  <img src="../assets/update.png" alt="Update Icon" class="icon" style="height: 1em;"> Update
+                </router-link>
+                <button v-if="isAdmin" @click="deleteRestaurant(item.id)" class="delete-button">
+                  <img src="../assets/delete.png" alt="Delete Icon" class="icon" style="height: 1em;"> Delete
+                </button>
+                <router-link :to="'/review/' + item.id" class="review-link">
+                  <img src="../assets/review.png" alt="Review Icon" class="icon" style="height: 1em;"> Review
+                </router-link>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -44,6 +56,7 @@ export default {
     return {
       name: '',
       restaurants: [],
+      isAdmin: false,
     };
   },
   components: {
@@ -55,34 +68,33 @@ export default {
         const response = await axios.delete(`http://localhost:8080/restaurants/${id}`);
         if (response.status === 200) {
           console.log('Restaurant deleted successfully:', id);
-
-          // Update the local restaurant data after successful deletion
-          const updatedRestaurants = this.restaurants.filter(
-            (restaurants) => restaurants.id !== id
-          );
-          this.restaurants = updatedRestaurants;
+          this.restaurants = this.restaurants.filter((restaurant) => restaurant.id !== id);
         } else {
           console.error('Error deleting restaurant:', response.status, response.data);
-          // Handle errors (e.g., display error message to user)
         }
       } catch (error) {
         console.error('Error deleting restaurant:', error);
-        // Handle network or other errors
       }
     },
     async loadData() {
-      let user = localStorage.getItem('user-info');
+      const user = localStorage.getItem('user-info');
       if (user) {
-        this.name = JSON.parse(user).name;
+        const userInfo = JSON.parse(user);
+        this.name = userInfo.name;
+        this.isAdmin = userInfo.role === 'admin';
       } else {
         this.$router.push({ name: 'MySignUp' });
       }
-      let result = await axios.get('http://localhost:8080/restaurants');
-      console.log('Fetched restaurant data:', result.data);
-      this.restaurants = result.data;
+
+      try {
+        const result = await axios.get('http://localhost:8080/restaurants');
+        console.log('Fetched restaurant data:', result.data);
+        this.restaurants = result.data;
+      } catch (error) {
+        console.error('Error fetching restaurants:', error);
+      }
     },
   },
-
   async mounted() {
     this.loadData();
   },
@@ -138,7 +150,8 @@ tr:nth-child(even) {
 }
 
 .update-link,
-.delete-button {
+.delete-button,
+.review-link {
   padding: 10px 15px;
   margin-right: 10px;
   text-decoration: none;
@@ -159,6 +172,12 @@ tr:nth-child(even) {
   color: white;
 }
 
+.review-link {
+  background-color: rgb(68, 68, 228);
+  color: white;
+}
+
+.review-link:hover,
 .update-link:hover,
 .delete-button:hover {
   opacity: 0.8;

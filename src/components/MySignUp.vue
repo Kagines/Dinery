@@ -2,7 +2,7 @@
   <div class="signup-container">
     <img class="logo" src="../assets/dinery1.png" alt="Dinery Logo">
     <h1>Sign Up</h1>
-    <form class="register-form" @submit="signUp">
+    <form class="register-form" @submit.prevent="signUp">
       <div class="input-group">
         <input type="text" v-model="name" class="input" placeholder="Enter Name" required>
         <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
@@ -15,6 +15,14 @@
         <input type="password" v-model="password" class="input" placeholder="Enter Password" required>
         <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
       </div>
+      <div class="input-group">
+        <select v-model="role" class="input" required>
+          <option value="" disabled>Select Role</option>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+        <span v-if="errors.role" class="error-message">{{ errors.role }}</span>
+      </div>
       <button class="button" type="submit">Sign Up</button>
       <p>
         <router-link to="/login">Login</router-link>
@@ -24,7 +32,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
 
 export default {
   name: 'MySignUp',
@@ -33,25 +41,26 @@ export default {
       name: '',
       email: '',
       password: '',
+      role: '',
       errors: {}
-    }
+    };
   },
   methods: {
-    async signUp(event) {
-      event.preventDefault();
+    async signUp() {
       this.errors = {};
 
       try {
-        let result = await axios.post("http://localhost:8080/users", {
+        const result = await axios.post('http://localhost:8080/users', {
           name: this.name,
           email: this.email,
-          password: this.password
+          password: this.password,
+          role: this.role
         });
 
         console.log(result);
-        if (result.status == 201) {
-          localStorage.setItem("user-info", JSON.stringify(result.data))
-          this.$router.push({ name: 'MyHome' })
+        if (result.status === 201) {
+          localStorage.setItem('user-info', JSON.stringify(result.data));
+          this.$router.push({ name: 'MyHome' });
         }
       } catch (error) {
         if (error.response && error.response.data) {
@@ -63,13 +72,14 @@ export default {
     }
   },
   mounted() {
-    let user = localStorage.getItem('user-info');
+    const user = localStorage.getItem('user-info');
     if (user) {
-      this.$router.push({ name: 'MyHome' })
+      this.$router.push({ name: 'MyHome' });
     }
   }
-}
+};
 </script>
+
 
 <style scoped>
 body {

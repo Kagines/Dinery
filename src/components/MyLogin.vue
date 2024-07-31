@@ -2,7 +2,7 @@
   <div class="login-container">
     <img class="logo" src="../assets/dinery1.png" alt="Dinery Logo">
     <h1>Login</h1>
-    <form class="login" @submit="login">
+    <form class="login" @submit.prevent="login">
       <div class="input-group">
         <input type="email" v-model="email" class="input" placeholder="Enter Email" required>
         <span class="error-message" v-if="emailError">{{ emailError }}</span>
@@ -35,9 +35,7 @@ export default {
     };
   },
   methods: {
-    async login(event) {
-      event.preventDefault(); // Prevent default form submission
-
+    async login() {
       // Reset error messages
       this.emailError = '';
       this.passwordError = '';
@@ -54,7 +52,7 @@ export default {
       }
 
       try {
-        const response = await axios.get(`http://localhost:8080/users`, {
+        const response = await axios.get('http://localhost:8080/users', {
           params: {
             email: this.email,
             password: this.password
@@ -63,14 +61,26 @@ export default {
 
         // Handle successful login
         if (response.status === 200 && response.data.length > 0) {
-          localStorage.setItem("user-info", JSON.stringify(response.data[0]));
-          this.$router.push({ name: 'MyHome' });
+          const user = response.data[0];
+          localStorage.setItem("user-info", JSON.stringify(user));
+          if (user.role === 'admin') {
+            this.$router.push({ name: 'MyHome' });
+          } else if (user.role === 'user') {
+            this.$router.push({ name: 'MyHome' }); // or some other user-specific page
+          }
         } else {
           this.loginError = 'Invalid email or password';
         }
       } catch (error) {
         this.loginError = 'An error occurred during login. Please try again.';
         console.error('Login error:', error);
+        if (error.response) {
+          console.error('Response data:', error.response.data);
+          console.error('Response status:', error.response.status);
+          console.error('Response headers:', error.response.headers);
+        } else {
+          console.error('Error message:', error.message);
+        }
       }
     },
     validateEmail(email) {
@@ -79,9 +89,12 @@ export default {
     }
   },
   mounted() {
-    let user = localStorage.getItem('user-info');
+    const user = localStorage.getItem('user-info');
     if (user) {
-      this.$router.push({ name: 'MyHome' });
+      const userInfo = JSON.parse(user);
+      if (userInfo.role === 'admin' || userInfo.role === 'user') {
+        this.$router.push({ name: 'MyHome' });
+      }
     }
   }
 };

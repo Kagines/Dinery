@@ -1,24 +1,33 @@
 <template>
-    <div class="nav">
-      <img src="../assets/dinery1.png" alt="Logo" class="logo1">
-      <router-link to="/">Home</router-link>
-      <router-link to="/add">Add Restaurant</router-link>
-      <a v-on:click="logout" href="#">Logout</a>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'MyHeader',
-    methods: {
-      logout(event) {
-        event.preventDefault();
-        localStorage.clear();
-        this.$router.push({ name: 'MyLogin' });
-      }
+  <div class="nav">
+    <img src="../assets/dinery1.png" alt="Logo" class="logo1">
+    <router-link to="/">Home</router-link>
+    <router-link v-if="user && user.role === 'admin'" to="/add">Add Restaurant</router-link>
+    <router-link v-if="user && user.role === 'admin'" to="/analytics">Analytics</router-link>
+    <router-link v-if="user" @click="logout" to="#">Logout</router-link>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'MyHeader',
+  data() {
+    return {
+      user: null
+    };
+  },
+  created() {
+    this.user = JSON.parse(localStorage.getItem('user-info'));
+  },
+  methods: {
+    logout(event) {
+      event.preventDefault();
+      localStorage.removeItem('user-info');
+      this.$router.push({ name: 'MyLogin' });
     }
   }
-  </script>
+};
+</script>
   
   <style>
   .nav {

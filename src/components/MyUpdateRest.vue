@@ -2,17 +2,20 @@
   <div class="container">
     <MyHeader />
     <h1 class="heading">Hello User, Welcome to Update Restaurant Page</h1>
-    <form class="update">
+    <form class="update" @submit.prevent="updateRestaurant">
       <div class="input-group">
-        <input type="text" id="name" v-model="restaurants.name" class="input" placeholder="Enter Name" required>
+        <input type="text" id="name" v-model="restaurant.name" class="input" placeholder="Enter Name" required>
       </div>
       <div class="input-group">
-        <input type="text" id="address" v-model="restaurants.address" class="input" placeholder="Enter Address" required>
+        <input type="text" id="address" v-model="restaurant.address" class="input" placeholder="Enter Address" required>
       </div>
       <div class="input-group">
-        <input type="text" id="contact" v-model="restaurants.contact" class="input" placeholder="Enter Contact" required>
+        <input type="text" id="contact" v-model="restaurant.contact" class="input" placeholder="Enter Contact" required>
       </div>
-      <button type="submit" class="btn" v-on:click.prevent="updateRestaurant">Update Restaurant</button>
+      <div class="input-group">
+        <input type="url" id="link" v-model="restaurant.link" class="input" placeholder="Enter Link" required>
+      </div>
+      <button type="submit" class="btn">Update Restaurant</button>
     </form>
   </div>
 </template>
@@ -26,21 +29,27 @@ export default {
   components: {
     MyHeader
   },
-
   data() {
     return {
-      restaurants: {
+      restaurant: {
         name: '',
         address: '',
-        contact: ''
-      }
-    }
+        contact: '',
+        link: ''
+      },
+      user: null
+    };
   },
-
   async mounted() {
-    let user = localStorage.getItem('user-info');
-    if (!user) {
-      this.$router.push({ name: 'MySignUp' })
+    this.user = JSON.parse(localStorage.getItem('user-info'));
+    if (!this.user) {
+      this.$router.push({ name: 'MySignUp' });
+      return;
+    }
+
+    if (this.user.role !== 'admin') {
+      this.$router.push({ name: 'MyHome' });
+      return;
     }
 
     const id = this.$route.params.id;
@@ -51,21 +60,20 @@ export default {
 
     try {
       const result = await axios.get(`http://localhost:8080/restaurants/${id}`);
-      this.restaurants = result.data;
+      this.restaurant = result.data;
       console.log('Fetched restaurant data:', result);
     } catch (error) {
       console.error('Error fetching restaurant:', error);
     }
   },
-
   methods: {
     async updateRestaurant() {
       const id = this.$route.params.id;
       try {
-        const response = await axios.put(`http://localhost:8080/restaurants/${id}`, this.restaurants);
+        const response = await axios.put(`http://localhost:8080/restaurants/${id}`, this.restaurant);
         if (response.status === 200) {
           console.log('Restaurant updated successfully!');
-          this.$router.push({ name: 'MyHome' })
+          this.$router.push({ name: 'MyHome' });
         } else {
           console.error('Error updating restaurant:', response.status, response.data);
         }
